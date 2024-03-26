@@ -8,3 +8,9 @@ type ResUsuario struct {
 	Email       *string    `json:"email"`
 	DataCriacao *time.Time `json:"data_criacao"`
 }
+
+type ReqUsuario struct {
+	Nome  *string `json:"nome" binding:"required"`
+	Email *string `json:"email" binding:"required"`
+	Senha *string `json:"senha"`
+}
