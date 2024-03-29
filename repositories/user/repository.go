@@ -1,26 +1,26 @@
 package user
 
 import (
-	"database/sql"
 	sq "github.com/Masterminds/squirrel"
+	"github.com/antony-raul/tw/config/database"
 	userInterface "github.com/antony-raul/tw/interfaces/user"
 	userModel "github.com/antony-raul/tw/models/user"
 )
 
 type repository struct {
-	builder sq.StatementBuilderType
+	db *database.DBTransaction
 }
 
-func NewRepo(db *sql.Tx) userInterface.Iuser {
+func NewRepo(tx *database.DBTransaction) userInterface.Iuser {
 	return &repository{
-		builder: sq.StatementBuilder.PlaceholderFormat(sq.Dollar).RunWith(db),
+		db: tx,
 	}
 }
 
 func (r *repository) ObterUsuarioPeloID(ID *int64) (user *userModel.ResUsuario, err error) {
 	user = new(userModel.ResUsuario)
 
-	if err = r.builder.Select("id",
+	if err = r.db.Builder.Select("id",
 		"nome",
 		"email",
 		"data_criacao").
@@ -36,7 +36,7 @@ func (r *repository) ObterUsuarioPeloID(ID *int64) (user *userModel.ResUsuario, 
 }
 
 func (r *repository) CriarUsuario(req *userModel.ReqUsuario) (ID int64, err error) {
-	if err = r.builder.Insert("public.t_usuario").
+	if err = r.db.Builder.Insert("public.t_usuario").
 		Columns("nome", "senha", "email").
 		Values(req.Nome, req.Senha, req.Email).
 		Suffix("RETURNING id").QueryRow().Scan(&ID); err != nil {

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/antony-raul/tw/config"
+	"github.com/antony-raul/tw/config/database"
 	"github.com/antony-raul/tw/handlers/user"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	if err := config.ConnectDB(); err != nil {
+	if err := database.ConnectDB(); err != nil {
 		log.Fatal(err)
 	}
 	r := gin.New()

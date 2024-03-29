@@ -2,15 +2,15 @@ package user
 
 import (
 	"context"
-	"github.com/antony-raul/tw/config"
+	"github.com/antony-raul/tw/config/database"
 	userModel "github.com/antony-raul/tw/models/user"
 	userRepo "github.com/antony-raul/tw/repositories/user"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func ObterUsuarioPeloID(ctx context.Context, ID *int64) (user *userModel.ResUsuario, err error) {
-	tx, err := config.NewTransaction(ctx, true)
-
+	tx, err := database.NewTransaction(ctx, true)
+	defer tx.Rollback()
 	repo := userRepo.NewRepo(tx)
 
 	user, err = repo.ObterUsuarioPeloID(ID)
@@ -22,7 +22,7 @@ func ObterUsuarioPeloID(ctx context.Context, ID *int64) (user *userModel.ResUsua
 }
 
 func CriarUsuario(ctx context.Context, req *userModel.ReqUsuario) (ID int64, err error) {
-	tx, err := config.NewTransaction(ctx, false)
+	tx, err := database.NewTransaction(ctx, false)
 	defer tx.Rollback()
 
 	senhaHash, err := bcrypt.GenerateFromPassword([]byte(*req.Senha), bcrypt.DefaultCost-1)
